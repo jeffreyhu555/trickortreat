@@ -4,7 +4,7 @@ from flask.ext.sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] =\
- 'mysql://602p:'+open("dbpassword",'r').read()+'@602p.mysql.pythonanywhere-services.com/602p$trickortreat'
+ 'mysql://602p:'+open("dbpassword",'r').read().strip()+'@602p.mysql.pythonanywhere-services.com/602p$trickortreat'
 
 db = SQLAlchemy(app)
 
