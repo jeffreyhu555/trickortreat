@@ -1,5 +1,5 @@
-import sqlite3
-from flask import Flask
+import sqlite3, time, json, os
+from flask import Flask, request
 from flask.ext.sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
@@ -44,9 +44,33 @@ class Candy(db.Model):
 		self.name=name
 		self.tags=tags
 
-@app.route('/api/test')
-def hello_world():
-	return '{"connected":true}'
+@app.route('/upload', methods=['POST', 'GET'])
+def api_upload():
+	try:
+		if request.method=="POST":
+			if "?" in request.url:
+				if request.files and 'image' in request.files:
+					imageid=request.url.split("?",1)[1]
+					f=request.files['image']
+					ext=f.filename.split(".",1)[1]
+					fname=imageid+"."+ext
+					if imageid and fname not in os.listdir("static/uploads/"):
+						if ext in ["png","jpg","jpeg","gif"]:
+							f.save("static/uploads/"+fname)
+							return json.dumps({"success":True})
+					return json.dumps({"success":False, "error":"invalid_extention"})
+				return json.dumps({"success":False, "error":"no_attachment"})
+			return json.dumps({"success":False, "error":"no_imageid"})
+		return json.dumps({"success":False, "error":"wrong_method"})
+	except BaseException as e:
+		return json.dumps({"success":False, "error":"internal_error", "python_error":str(e)})
+
+
+@app.route('/test')
+def api_test():
+	return json.dumps({"success":True})
+
+
 
 if __name__=="__main__":
 	app.run()
