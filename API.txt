@@ -1,0 +1,17 @@
+review object (sent to server) /submit
+place ID, notes, *rating,  *candy received, *types of candy, *photo_id
+
+/upload?id
+photo via Sam method
+
+
+house request object (sent to server) /request
+location, radius, *required tags, *disallowed tags, *minimum candy, *sort by, *minimum review
+
+
+house data object (sent to client) 
+address, rating, avg candy, candies, tags, photos, notes
+
+
+house data (sent to client)
+house data objects meeting request criteria
