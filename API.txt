@@ -1,5 +1,5 @@
 review object (sent to server) /submit
-address, notes, *rating,  *candy received, *types of candy, *photo_id
+place ID, address, notes, *rating,  *candy received, *types of candy, *photo_id
 
 /upload?id
 photo via Sam method
