@@ -4,21 +4,45 @@ from flask.ext.sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] =\
- 'mysql://602p:'+open("dbpassword",'r').read().strip()+'@602p.mysql.pythonanywhere-services.com/602p$trickortreat'
+ 'sqlite:///test.db'
 
 db = SQLAlchemy(app)
 
-class User(db.Model):
-	id = db.Column(db.Integer, primary_key=True)
-	username = db.Column(db.String(80), unique=True)
-	email = db.Column(db.String(120), unique=True)
+class House(db.Model):
+	id = db.Column(db.Integer(), primary_key=True)
+	placeid = db.Column(db.String(30))
+	address = db.Column(db.String(150))
+	lat = db.Column(db.Float())
+	lon = db.Column(db.Float())
+	notes = db.Column(db.String(5000)) # ### as seperator
+	rating = db.Column(db.Float())
+	rating_raters = db.Column(db.Integer())
+	candies = db.Column(db.String(5000))
+	avgcandy = db.Column(db.Float())
+	avgcandy_raters = db.Column(db.Integer())
+	photos = db.Column(db.String(5000)) # ### as seperator
 
-	def __init__(self, username, email):
-		self.username = username
-		self.email = email
 
-	def __repr__(self):
-		return '<User %r>' % self.username
+	def __init__(self, placeid, initial_note, initial_photo, intitial_rating, intitial_candy, initial_candies):
+		self.placeid=placeid
+		self.address="<NOTCOMPUTED>"
+		self.lat=-1
+		self.lon=-1
+		self.notes=initial_note
+		self.rating=intitial_rating if intitial_rating else 0
+		self.rating_raters=1
+		self.avgcandy=intitial_candy
+		self.avgcandy_raters=1 if intitial_candy else 0
+		self.photos=initial_photo
+
+class Candy(db.Model):
+	id = db.Column(db.Integer(), primary_key=True)
+	name = db.Column(db.String(30), unique=True)
+	tags = db.Column(db.String(5000)) # ### as seperator
+
+	def __init__(self, name, tags):
+		self.name=name
+		self.tags=tags
 
 @app.route('/api/test')
 def hello_world():
