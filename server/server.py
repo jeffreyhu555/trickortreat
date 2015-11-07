@@ -1,12 +1,10 @@
 import sqlite3
 from flask import Flask
 from flask.ext.sqlalchemy import SQLAlchemy
+from sqlalchemy.orm import sessionmaker
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] =\
- 'sqlite:///test.db'
-
-db = SQLAlchemy(app)
+db = create_engine('sqlite:///test.db')
 
 class House(db.Model):
 	id = db.Column(db.Integer(), primary_key=True)
