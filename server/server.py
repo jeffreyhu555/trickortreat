@@ -1,8 +1,9 @@
-import sqlite3, time, json, os
+import sqlite3, time, json, os, sqlalchemy
 from flask import Flask, request
 from flask.ext.sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
+app.debug=1
 app.config['SQLALCHEMY_DATABASE_URI'] =\
  'sqlite:///test.db'
 
@@ -14,25 +15,27 @@ class House(db.Model):
 	address = db.Column(db.String(150))
 	lat = db.Column(db.Float())
 	lon = db.Column(db.Float())
-	notes = db.Column(db.String(5000)) # ### as seperator
+	notes = db.Column(db.String(5000))
 	rating = db.Column(db.Float())
 	rating_raters = db.Column(db.Integer())
 	candies = db.Column(db.String(5000))
 	avgcandy = db.Column(db.Float())
 	avgcandy_raters = db.Column(db.Integer())
-	photos = db.Column(db.Strinig(5000))# ### as seperator
+	photos = db.Column(db.String(5000))
+	visits = db.Column(db.Integer())
 
-	def __init__(self, placeid, initial_note, intitial_rating, intitial_candy, initial_candies):
+	def __init__(self, placeid, initial_note, initial_rating, initial_candy, initial_candies):
 		self.placeid=placeid
 		self.address="<NOTCOMPUTED>"
 		self.lat=-1
 		self.lon=-1
 		self.notes=initial_note
-		self.rating=0 if initial_rating==None else intitial_rating
-		self.rating_raters=1 if intitial_rating!=None else 0
-		self.avgcandy=0 if initial_candy==None else intitial_candy
-		self.avgcandy_raters=1 if intitial_candy!=None else 0
+		self.rating=0 if initial_rating==None else initial_rating
+		self.rating_raters=1 if initial_rating!=None else 0
+		self.avgcandy=0 if initial_candy==None else initial_candy
+		self.avgcandy_raters=1 if initial_candy!=None else 0
 		self.candies=initial_candies
+		self.visits=1
 		self.photos=""
 
 class Candy(db.Model):
@@ -44,9 +47,9 @@ class Candy(db.Model):
 		self.name=name
 		self.tags=tags
 
-lambda FAIL(code, data=None): json.dumps({"success":False, "error":code, "info":data})
+def FAIL(code, data=None): return json.dumps({"success":False, "error":code, "info":data})
 
-def reduce(l):
+def deduplicate(l):
 	c=[]
 	for i in l:
 		if i not in c: c.append(i)
@@ -64,7 +67,7 @@ def api_upload():
 
 	if ext not in ["png","jpg","jpeg","gif"]: return FAIL("invalid_extention")
 
-	record=db.session.query(House).filter_by(placeid=placeid)
+	record=House.query.filter_by(placeid=placeid).one()
 
 	if not record: return FAIL("no_such_placeid")
 
@@ -77,39 +80,80 @@ def api_upload():
 
 @app.route('/submit', methods=['POST', 'GET'])
 def api_submit():
-	if request.method!="POST": return FAIL("wrong_method")
-	if not request.data: return FAIL("no_data")
 	try:
-		data=json.loads(request.data)
+		if request.method!="POST": return FAIL("wrong_method")
+		if not request.data: return FAIL("no_data")
+		request.data=request.data.decode("utf-8")
+		try:
+			data=json.loads(str(request.data))
+		except json.decoder.JSONDecodeError as e:
+			return FAIL("invalid_data", str(e))
+
+		if "placeid" not in data: return FAIL("no_placeid")
+		if data["placeid"]=="": return FAIL("invalid_placeid")
+
+		try:
+			record=House.query.filter_by(placeid=data["placeid"]).one()
+		except sqlalchemy.orm.exc.NoResultFound:
+			record=None
+
+		if not record:
+			record=House(data["placeid"], repr([data["note"]] if data.get("note","")!="" else []), data.get("rating"), data.get("candy"), repr(data.get("candies",[])))
+			db.session.add(record)
+		else:
+			if "note" in data:
+				n=eval(record.notes)
+				n.append(data["note"])
+				record.notes=repr(n)
+			if "rating" in data:
+				record.rating+=float(data["rating"]) #TODO: Real calculation
+				record.rating_raters+=1
+			if "candy" in data:
+				record.avgcandy+=float(data["candy"]) #TODO: Real calculation
+				record.avgcandy_raters+=1
+			if "candies" in data:
+				c=eval(record.candies)
+				c.extend(data["candies"])
+				record.candies=repr(deduplicate(c))
+			record.visits+=1
+
+		db.session.commit()
+		print("yay")
+		return json.dumps({"success":True})
 	except json.decoder.JSONDecodeError as e:
-		return FAIL("invalid_data", str(e))
+		return FAIL("unknown_error", str(e))
 
-	if "placeid" not in data: FAIL("no_placeid")
-	if data["placeid"]=="": FAIL("invalid_placeid")
+@app.route('/request', methods=['POST', 'GET'])
+def api_request():
+	# if not request.data: return FAIL("no_data")
+	# try:
+	# 	data=json.loads(request.data)
+	# except json.decoder.JSONDecodeError as e:
+	# 	return FAIL("invalid_data", str(e))
 
-	record=session.query(House).filter_by(placeid=data["placeid"])
+	try:
+		name={"houses":[], "success":True}
 
-	if not record:
-		record=House(data["placeid"], data.get("note",""), data.get("rating"), data.get("candy"), "###".join(data.get("candies"))+("" if "candies" in data else "###"))
-		db.session.add(record)
-	else:
-		if "note" in data:
-			record.notes+=data["note"].replace("###","##")+"###"
-		if "rating" in data:
-			record.rating+=data["rating"] #TODO: Real calculation
+		for row in House.query.all():
+			name["houses"].append({
+				"placeid":row.placeid,
+				"address":row.address,
+				"lat":row.lat,
+				"lon":row.lon,
+				"rating":row.rating,
+				"avgcandy":row.avgcandy,
+				"candies":eval(row.candies),
+				"visits":row.visits,
+				"notes":eval(row.notes)
+			})
 
-	db.session.commit()
-
-
-
-
-
+		return json.dumps(name)
+	except BaseException as e:
+		return FAIL("unknown_error", str(e))
 
 @app.route('/test')
 def api_test():
 	return json.dumps({"success":True})
-
-
 
 if __name__=="__main__":
 	app.run()
