@@ -101,7 +101,7 @@ def api_submit():
 			record=House(data["placeid"], repr([data["note"]] if data.get("note","")!="" else []), data.get("rating"), data.get("candy"), repr(data.get("candies",[])))
 			db.session.add(record)
 		else:
-			if "note" in data:
+			if "note" in data and data["note"]!="":
 				n=eval(record.notes)
 				n.append(data["note"])
 				record.notes=repr(n)
@@ -111,7 +111,7 @@ def api_submit():
 			if "candy" in data:
 				record.avgcandy+=float(data["candy"]) #TODO: Real calculation
 				record.avgcandy_raters+=1
-			if "candies" in data:
+			if "candies" in data and data["candies"]!=[""]:
 				c=eval(record.candies)
 				c.extend(data["candies"])
 				record.candies=repr(deduplicate(c))
