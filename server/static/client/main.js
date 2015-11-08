@@ -176,6 +176,7 @@ function uploadImage(){
 }
 
 function search(){
+  console.log("md"+$("#maxdist").val());
   $.ajax({
     url: "/request",
     type: "POST",
@@ -203,7 +204,7 @@ function killAllMarkers(){
 }
 
 function generateContent(house){
-  var r= house.address+"<br/><div class=\"lightbox-launcher-container\">";;
+  var r= house.address+" - "+house.dist+"mi<br/><div class=\"lightbox-launcher-container\">";;
   for (i=0; i<house.photos.length;i++){
     r+="<img class=\"lightbox-element\" href=\"/static/uploads/"+house.photos[i]+"\" src=\"/static/uploads/"+house.photos[i]+"\"/>";
   }
@@ -281,7 +282,7 @@ function updateCircle(){
     if (circle!=-1){circle.setVisible(false);}
     circle = new google.maps.Circle({
       map: map,
-      radius: 169.3*parseInt($("#maxdist").val()),    // 10 miles in metres
+      radius: 169.3*parseFloat($("#maxdist").val()),    // 10 miles in metres
       fillColor: '#AA0000',
       strokeWeight:0.5
     });

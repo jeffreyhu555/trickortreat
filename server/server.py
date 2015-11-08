@@ -172,9 +172,11 @@ def api_request():
 	request.data=request.data.decode("utf-8")
 	try:
 		data=json.loads(str(request.data))
+		print(data)
 		data["lat"]=castdefault(data, "lat", float, -1)
 		data["lon"]=castdefault(data, "lon", float, -1)
 		data["dist"]=castdefault(data, "dist", float, -1)
+		print(data["dist"])
 		data["rating"]=castdefault(data, "rating", float, -1)
 		data["candy"]=castdefault(data, "candy", float, -1)
 		data["required"]=data["required"] if data["required"]!=[""] else []
@@ -194,6 +196,7 @@ def api_request():
 				continue
 
 		if data["dist"]!=-1:
+			print(calc_dist(data["lat"], data["lon"], row.lat, row.lon))
 			if calc_dist(data["lat"], data["lon"], row.lat, row.lon)>data["dist"]:
 				continue
 
@@ -229,7 +232,8 @@ def api_request():
 			"visits":row.visits,
 			"notes":eval(row.notes),
 			"photos":eval(row.photos),
-			"tags":tags
+			"tags":tags,
+			"dist":calc_dist(data["lat"], data["lon"], row.lat, row.lon)
 		})
 
 	return json.dumps(name)
