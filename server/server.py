@@ -19,7 +19,12 @@ def calc_dist(lat1, lon1, lat2, lon2):
 
 	return R * c
 
-candy_db=json.load(open("candies.json", 'r'))
+candy_db={
+	"snickers":["peanuts", "chocolate", "caramel"],
+	"twizzlers":["licorice"],
+	"hersheys":["chocolate"],
+	"full size hersheys":["chocolate", "Hersheys"]
+}
 
 app = Flask(__name__)
 app.debug=1
