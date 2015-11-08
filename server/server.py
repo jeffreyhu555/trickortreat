@@ -97,7 +97,7 @@ def api_upload():
 	rp.append(fname)
 	record.photos=repr(rp)
 	db.session.commit()
-	f.save("/static/uploads/"+fname)
+	f.save("static/uploads/"+fname)
 
 	return json.dumps({"success":True})
 

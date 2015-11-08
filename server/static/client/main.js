@@ -207,6 +207,7 @@ function generateContent(house){
   for (i=0; i<house.photos.length;i++){
     r+="<img class=\"lightbox-element\" href=\"/static/uploads/"+house.photos[i]+"\" src=\"/static/uploads/"+house.photos[i]+"\"/>";
   }
+  r+="<br/>";
   if(house.notes.length>0){
     r+="</div><br/>Notes:<br/>";
     for (i=0; i<house.notes.length;i++){
