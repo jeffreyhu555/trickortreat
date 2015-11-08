@@ -45,6 +45,10 @@ function setupMap(coords){
     center: {lat: coords.coords.latitude, lng: coords.coords.longitude},
     zoom: 20
   });
+   $("#lat").val(coords.coords.latitude);
+    $("#lon").val(coords.coords.longitude);
+    $("#userlat").val(coords.coords.latitude);
+    $("#userlon").val(coords.coords.longitude);
    map.addListener('click', geocode);
 
 }
@@ -145,6 +149,7 @@ function submitData(){
   $("#gum").prop('checked', false);
   $('#rating').raty({number:10});
   $('#candy').raty({number:10});
+  killAllMarkers();
 }
 
 function uploadImage(){
@@ -200,9 +205,18 @@ function generateContent(house){
   for (i=0; i<house.photos.length;i++){
     r+="<img src=\"/static/uploads/"+house.photos[i]+"\"/>";
   }
-  r+="</div><br/>Notes:<br/>";
-  for (i=0; i<house.notes.length;i++){
-    r+="<code>"+house.notes[i]+"</code><br/>";
+  if(house.notes.length>0){
+    r+="</div><br/>Notes:<br/>";
+    for (i=0; i<house.notes.length;i++){
+      r+="<code>"+house.notes[i]+"</code><br/>";
+    }
+  }
+  if(house.tags.length>0){
+    r+="</div><br/>Tags: <code>"+house.tags[0];
+    for (i=1; i<house.tags.length;i++){
+      r+=", "+house.tags[i];
+    }
+    r+="</code><br/>";
   }
   if(house.rating>0){r+="<b>Avg Rating:"+house.calc_rating+"</b>";}
   else{r+="<b>(Noone has rated this house)</b>";}

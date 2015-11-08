@@ -222,7 +222,8 @@ def api_request():
 			"candies":eval(row.candies),
 			"visits":row.visits,
 			"notes":eval(row.notes),
-			"photos":eval(row.photos)
+			"photos":eval(row.photos),
+			"tags":tags
 		})
 
 	return json.dumps(name)
