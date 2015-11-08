@@ -43,8 +43,7 @@ body {
 	background-color: #FFC266;
 }
 
-#filter-button-container{
-	position:absolute;
+#filter-and-clear-button-container{
 	bottom:0.5vh;
 	width:100%;
 }
@@ -53,6 +52,18 @@ body {
 #skip-and-upload-container{
 	width: 100%;
 	bottom: 1vh;
+}
+
+#clear-button{
+  width: 10%;
+  bottom: 0vh;
+  float:right;
+  text-align: center;
+}
+
+#browse-button{
+  width: 90%;
+  bottom: 0vh;
 }
 
 .skip-or-upload-button{

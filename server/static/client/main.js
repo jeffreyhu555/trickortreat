@@ -71,6 +71,7 @@ function geocode(e){
         $("#userlon").val(latlng.lng);
         $("#address").val(results[0].formatted_address);
         address=results[0].formatted_address;
+        updateCircle();
       } else {
         window.alert('No results found');
       }
@@ -85,6 +86,7 @@ function initBindings(){
 	$("#hidden-upload-field").change(scrollToPage3);
   $('#rating').raty({number:10});
   $('#candy').raty({number:10});
+  $('#maxdist').change(updateCircle);
 }
 
 function submitData(){
@@ -203,7 +205,7 @@ function killAllMarkers(){
 function generateContent(house){
   var r= house.address+"<br/><div class=\"lightbox-launcher-container\">";;
   for (i=0; i<house.photos.length;i++){
-    r+="<img src=\"/static/uploads/"+house.photos[i]+"\"/>";
+    r+="<img class=\"lightbox-element\" href=\"/static/uploads/"+house.photos[i]+"\" src=\"/static/uploads/"+house.photos[i]+"\"/>";
   }
   if(house.notes.length>0){
     r+="</div><br/>Notes:<br/>";
@@ -229,6 +231,7 @@ function generateContent(house){
 
 function processRequestResults(d){
   killAllMarkers();
+  if (circle!=-1){circle.setVisible(false);}
   for (j=0; j<d.houses.length;j++){
     var ayy=d.houses[j];
     var m = new google.maps.Marker({
@@ -248,7 +251,7 @@ function processRequestResults(d){
 
   map.fitBounds(bounds);
   scrollToPage1();
-  marker.setMap(null);
+  if (circle!=undefined){marker.setMap(null);}
 }
 
 function attachListner(marker, msg){
@@ -257,5 +260,30 @@ function attachListner(marker, msg){
     content: msg
   });
   console.log("ctd");
-   marker.addListener('click', function(){l_infowindow.open(map, marker);});
+   marker.addListener('click', function(){l_infowindow.open(map, marker);$('.lightbox-launcher-container').magnificPopup({
+    delegate: 'img', // child items selector, by clicking on it popup will open
+    type: 'image'
+    // other options
+  });});
+}
+
+function isInt(value) {
+
+    var er = /^-?[0-9]+$/;
+
+    return er.test(value);
+}
+
+var circle=-1;
+function updateCircle(){
+  if(isInt($("#maxdist").val())){
+    if (circle!=-1){circle.setVisible(false);}
+    circle = new google.maps.Circle({
+      map: map,
+      radius: 169.3*parseInt($("#maxdist").val()),    // 10 miles in metres
+      fillColor: '#AA0000',
+      strokeWeight:0.5
+    });
+    circle.bindTo('center', marker, 'position');
+  }
 }

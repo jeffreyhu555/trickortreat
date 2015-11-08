@@ -3,8 +3,10 @@
 	<head>
 		<link rel="stylesheet" type="text/css" href="main.css"/>
 		<link rel="stylesheet" type="text/css" href="raty/jquery.raty.css"/>
+		<link rel="stylesheet" type="text/css" href="magpopup/magnific-popup.css"/>
 		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 		<script type="text/javascript" src="raty/jquery.raty.js"></script>
+		<script type="text/javascript" src="magpopup/jquery.magnific-popup.js"></script>
 		<script type="text/javascript" src="main.js"></script>
 		<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB6PYTZyYBXAt5QB2rulYAkEUMcld7Mg_Q&callback=initMap" 
 		 async defer></script>
@@ -21,8 +23,9 @@
 					<input type="submit" value="Take Photo&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" class="pomegranate-flat-button skip-or-upload-button" id="upload-button">
 					<input type="submit" value="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;No Photo" class="carrot-flat-button skip-or-upload-button" id="skip-upload-button" onclick="scrollToPage3();">
 				</div>
-				<div id="filter-button-container">
+				<div id="filter-and-clear-button-container">
 					<input type="submit" value="View Houses" class="turquoise-flat-button" id="browse-button" onclick="scrollToPage2();">
+					<input type="submit" value="Clear" class="pomegranate-flat-button" id="clear-button" onclick="killAllMarkers();if (circle!=-1){circle.setVisible(false);}">
 				</div>
 			</div>
 		</div>
