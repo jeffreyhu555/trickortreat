@@ -1,0 +1,26 @@
+<html>
+  <head>
+   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+  </head>
+  <body>
+    PlaceID: <input id="placeid"> <br/>
+    Rating:  <input id="rating"> <br/>
+    Candy:   <input id="candy"> <br/>
+    Note:    <input id="note"> <br/>
+    Candies: <textarea id="candies"></textarea> <br/>
+    <script type="text/javascript">
+      function sendajax(){
+        $.ajax({
+          url: "/submit",
+          type: "POST",
+          dataType:"json",
+          data: JSON.stringify({ placeid:$("#placeid").val(), rating:$("#rating").val(), candies:$('#candies').val().split('\n'),
+                candy:$("#candy").val(), note:$("#note").val()}),
+          contentType: "application/json; charset=utf-8",
+          success:function(d){console.log(d);}
+        });
+      }
+    </script>
+    <button onclick="sendajax()">Upload</button>
+  </body>
+</html>
