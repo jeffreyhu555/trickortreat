@@ -113,7 +113,8 @@ def api_submit():
 				record.avgcandy_raters+=1
 			if "candies" in data and data["candies"]!=[""]:
 				c=eval(record.candies)
-				c.extend(data["candies"])
+				for e in data["candies"]:
+					if e: c.append(e)
 				record.candies=repr(deduplicate(c))
 			record.visits+=1
 
