@@ -140,8 +140,8 @@ def api_request():
 				"address":row.address,
 				"lat":row.lat,
 				"lon":row.lon,
-				"rating":row.rating,
-				"avgcandy":row.avgcandy,
+				"rating":row.rating/row.rating_raters,
+				"avgcandy":row.avgcandy/row.avgcandy_raters,
 				"candies":eval(row.candies),
 				"visits":row.visits,
 				"notes":eval(row.notes)
