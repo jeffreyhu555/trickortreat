@@ -29,6 +29,7 @@ candy_db={
 app = Flask(__name__)
 app.debug=1
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
+app.config['UPLOAD_FOLDER'] = "static/uploads"
 
 db = SQLAlchemy(app)
 
@@ -89,7 +90,7 @@ def api_upload():
 
 	try:
 		record=House.query.filter_by(placeid=placeid).one()
-	except qlalchemy.orm.exc.NoResultFound:
+	except sqlalchemy.orm.exc.NoResultFound:
 		return FAIL("no_such_placeid")
 
 	rp=eval(record.photos)
@@ -97,7 +98,11 @@ def api_upload():
 	rp.append(fname)
 	record.photos=repr(rp)
 	db.session.commit()
-	f.save("static/uploads/"+fname)
+
+	try:
+	    f.save("static/uploads/"+fname)
+	except FileNotFoundError as e:
+	    return FAIL("file_not_found?", str(e)+";"+str(os.listdir(".")))
 
 	return json.dumps({"success":True})
 
@@ -203,7 +208,7 @@ def api_request():
 
 		good=True
 		for i in data["disallowed"]:
-			if i in tags: 
+			if i in tags:
 				good=False
 		if not good: continue
 
