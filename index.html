@@ -4,35 +4,16 @@
     <title>Simple Map</title>
     <meta name="viewport" content="initial-scale=1.0">
     <meta charset="utf-8">
-    <style>
-      html, body {
-        height: 100%;
-        margin: 0;
-        padding: 0;
-      }
-      #map {
-        height: 100%;
-      }
-    </style>
+    <link rel="stylesheet" type="text/css" href="css/main.css">
+
+    <script type="text/javascript" src="js/main.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB6PYTZyYBXAt5QB2rulYAkEUMcld7Mg_Q&callback=getCoords"
+        async defer></script>
   </head>
   <body>
     <div id="map"></div>
-    <script>
-
-var map;
-function initMap() {
-  navigator.geolocation.getCurrentPosition(getCoords)
-}
-
-function getCoords(coords){
-   map = new google.maps.Map(document.getElementById('map'), {
-    center: {lat: coords.coords.latitude, lng: coords.coords.longitude},
-    zoom: 12
-  });
-}
-
-    </script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB6PYTZyYBXAt5QB2rulYAkEUMcld7Mg_Q&callback=initMap"
-        async defer></script>
+    <div id="UI">
+      <button class="button">review</button>
+    </div>
   </body>
 </html>

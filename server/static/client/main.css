@@ -1,0 +1,323 @@
+#page1 {
+	height: 100vh;
+	background:linear-gradient(#FFEBCC,#FFC266);
+}
+ 
+#page2 {
+	height: 100vh;
+	background:linear-gradient(#FFC266,#FF9900);
+}
+
+#page3 {
+	height: 100vh;
+	background:linear-gradient(#FF9900,#CC7A00);
+}
+
+#mapcontainer{
+	height: 90vh;
+	width: 100%;
+}
+
+#map{
+	height: 100%;
+	width: 100%;
+}
+
+#uploadcontainer{
+	height: 10vh;
+}
+
+body { 
+	margin-top: 0px;
+	margin-right: 0px;
+	margin-bottom: 0px;
+	margin-left: 0px;
+	overflow-x:hidden;
+}
+
+#hidden-upload-field{
+	visibility: none;
+	display: none;
+	width:0%;
+	height:0%;
+	background-color: #FFC266;
+}
+
+#filter-and-clear-button-container{
+	bottom:0.5vh;
+	width:100%;
+}
+
+
+#skip-and-upload-container{
+	width: 100%;
+	bottom: 1vh;
+}
+
+#clear-button{
+  width: 10%;
+  bottom: 0vh;
+  float:right;
+  text-align: center;
+}
+
+#browse-button{
+  width: 90%;
+  bottom: 0vh;
+}
+
+.skip-or-upload-button{
+	width:50%;
+	float:left;
+}
+
+#send-button-container{
+  position: absolute;
+  bottom: -200vh;
+  width:100%;
+}
+
+#search-button-container{
+  position: absolute;
+  bottom: -100vh;
+  width:100%;
+}
+
+/* #Carrot Flat Button
+==================================================*/
+.carrot-flat-button {
+  position: relative;
+  vertical-align: top;
+  height: 5vh;
+  padding: 0;
+  font-size: 22px;
+  color: white;
+  text-align: left;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+  background: #e67e22;
+  border: 0;
+  border-bottom: 2px solid #da751c;
+  cursor: pointer;
+  -webkit-box-shadow: inset 0 -2px #da751c;
+  box-shadow: inset 0 -2px #da751c;
+}
+.carrot-flat-button:active {
+  top: 1px;
+  outline: none;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+}
+
+/* #Nephritis Flat Button
+==================================================*/
+.nephritis-flat-button {
+  position: relative;
+  vertical-align: top;
+  width: 100%;
+  height: 60px;
+  padding: 0;
+  font-size: 22px;
+  color: white;
+  text-align: center;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+  background: #27ae60;
+  border: 0;
+  border-bottom: 2px solid #219d55;
+  cursor: pointer;
+  -webkit-box-shadow: inset 0 -2px #219d55;
+  box-shadow: inset 0 -2px #219d55;
+}
+.nephritis-flat-button:active {
+  top: 1px;
+  outline: none;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+}
+
+/* #Pomegranate Flat Button
+==================================================*/
+.pomegranate-flat-button {
+  position: relative;
+  vertical-align: top;
+  height: 5vh;
+  padding: 0;
+  font-size: 22px;
+  color: white;
+  text-align: right;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+  background: #c0392b;
+  border: 0;
+  border-bottom: 2px solid #b53224;
+  cursor: pointer;
+  -webkit-box-shadow: inset 0 -2px #b53224;
+  box-shadow: inset 0 -2px #b53224;
+}
+.pomegranate-flat-button:active {
+  top: 1px;
+  outline: none;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+}
+
+/* #Turquoise Flat Button
+==================================================*/
+.turquoise-flat-button {
+  position: relative;
+  vertical-align: top;
+  width: 100%;
+  height: 5vh;
+  padding: 0;
+  font-size: 22px;
+  color: white;
+  text-align: center;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+  background: #1abc9c;
+  border: 0;
+  border-bottom: 2px solid #12ab8d;
+  cursor: pointer;
+  -webkit-box-shadow: inset 0 -2px #12ab8d;
+  box-shadow: inset 0 -2px #12ab8d;
+}
+.turquoise-flat-button:active {
+  top: 1px;
+  outline: none;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+}
+
+/* #Sun Flower Button
+==================================================*/
+.sun-flower-button {
+  position: relative;
+  vertical-align: top;
+  width: 100%;
+  height: 60px;
+  padding: 0;
+  font-size: 22px;
+  color: white;
+  text-align: center;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+  background: #f1c40f;
+  border: 0;
+  border-bottom: 2px solid #e2b607;
+  cursor: pointer;
+  -webkit-box-shadow: inset 0 -2px #e2b607;
+  box-shadow: inset 0 -2px #e2b607;
+}
+.sun-flower-button:active {
+  top: 1px;
+  outline: none;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+}
+
+.flat{
+	border: 1px solid #000000; 
+}
+
+.centered{
+	text-align: center
+}
+
+.fullwidth{
+	width:100%;
+}
+
+.tall{
+	height: 5vh;
+	font-size: 200%;
+}
+
+/* #Orange Flat Button
+==================================================*/
+.orange-flat-button {
+  position: relative;
+  vertical-align: top;
+  width: 100%;
+  height: 60px;
+  padding: 0;
+  font-size: 22px;
+  color: white;
+  text-align: center;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+  background: #f39c12;
+  border: 0;
+  border-bottom: 2px solid #e8930c;
+  cursor: pointer;
+  -webkit-box-shadow: inset 0 -2px #e8930c;
+  box-shadow: inset 0 -2px #e8930c;
+}
+.orange-flat-button:active {
+  top: 1px;
+  outline: none;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+}
+
+/* #Alizarin Flat Button
+==================================================*/
+.alizarin-flat-button {
+  position: relative;
+  vertical-align: top;
+  width: 100%;
+  height: 60px;
+  padding: 0;
+  font-size: 22px;
+  color: white;
+  text-align: center;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+  background: #e74c3c;
+  border: 0;
+  border-bottom: 2px solid #db4334;
+  cursor: pointer;
+  -webkit-box-shadow: inset 0 -2px #db4334;
+  box-shadow: inset 0 -2px #db4334;
+}
+.alizarin-flat-button:active {
+  top: 1px;
+  outline: none;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+}
+
+#toggle-container{
+	width: 100%;
+	padding-left:50px;
+	text-align: center;
+	display: inline-block;
+}
+
+.checkbox-element{
+	text-align: center;
+	width:20%;
+	float:left;
+	display: inline-block;
+    border-radius: 10px;
+    background: #B85C00;
+    margin-left: 20px;
+    margin-top:5px;
+    padding: 20px;
+    height: 100%;
+    font-size: 150%;
+}
+
+.star-container{
+	text-align: center;
+	font-size: 200%;
+}
+
+div.star-container img{
+	width:48px;
+	height:48px;
+}
+
+div.lightbox-launcher-container img{
+  width:100px;
+  height: 100px;
+}
+
+#computed-container{
+	width: 100%;
+	position: absolute;
+	bottom: -194vh;
+}

@@ -60,3 +60,5 @@ docs/_build/
 target/
 
 server/server.py
+
+README.md

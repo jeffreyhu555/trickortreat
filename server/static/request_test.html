@@ -1,0 +1,31 @@
+<html>
+  <head>
+   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+  </head>
+  <body>
+    Rating:  <input id="rating"> <br/>
+    Candy:   <input id="candy"> <br/>
+    Distance:    <input id="dist"> <br/>
+    Lat:    <input id="lat"> <br/>
+    Lon:    <input id="lon"> <br/>
+    Required: <textarea id="required"></textarea>
+    Disallowed: <textarea id="disallowed"></textarea><br/>
+    
+    
+    <button onclick="sendajax()">Get</button><br/><br/>
+    <textarea id="output">Output goes here</textarea>
+    <script type="text/javascript">
+      function sendajax(){
+        $.ajax({
+          url: "/request",
+          type: "POST",
+          dataType:"json",
+          data: JSON.stringify({ required:$('#required').val().split('\n'), disallowed:$('#disallowed').val().split('\n'),
+                candy:$("#candy").val(), rating:$("#rating").val(), lat:$("#lat").val(), lon:$("#lon").val(), dist:$("#dist").val()}),
+          contentType: "application/json; charset=utf-8",
+          success:function(d){console.log(d);$("#output").val(JSON.stringify(d));}
+        });
+      }
+    </script>
+  </body>
+</html>
