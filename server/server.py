@@ -23,7 +23,8 @@ candy_db={
 	"snickers":["peanuts", "chocolate", "caramel"],
 	"twizzlers":["licorice"],
 	"hersheys":["chocolate"],
-	"full size hersheys":["chocolate", "Hersheys"]
+	"full size hersheys":["chocolate", "Hersheys"],
+	"Reeses Peices":["peanuts"]
 }
 
 app = Flask(__name__)
