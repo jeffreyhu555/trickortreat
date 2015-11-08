@@ -295,9 +295,14 @@ body {
 	font-size: 200%;
 }
 
-img{
+div.star-container img{
 	width:48px;
 	height:48px;
+}
+
+div.lightbox-launcher-container img{
+  width:100px;
+  height: 100px;
 }
 
 #computed-container{

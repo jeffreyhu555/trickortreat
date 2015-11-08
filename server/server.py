@@ -1,5 +1,5 @@
 import sqlite3, time, json, os, sqlalchemy
-from flask import Flask, request
+from flask import Flask, request, redirect
 from flask.ext.sqlalchemy import SQLAlchemy
 from math import sin, cos, sqrt, atan2, radians
 
@@ -137,10 +137,10 @@ def api_submit():
 				n=eval(record.notes)
 				n.append(data["note"])
 				record.notes=repr(n)
-			if data["rating"]:
+			if data["rating"]!=-1:
 				record.rating+=float(data["rating"]) #TODO: Real calculation
 				record.rating_raters+=1
-			if data["candy"]:
+			if data["candy"]!=-1:
 				record.avgcandy+=float(data["candy"]) #TODO: Real calculation
 				record.avgcandy_raters+=1
 			if "candies" in data and data["candies"]!=[""]:
@@ -166,9 +166,9 @@ def api_request():
 	request.data=request.data.decode("utf-8")
 	try:
 		data=json.loads(str(request.data))
-		data["lat"]=castdefault(data, "lat", int, -1)
-		data["lon"]=castdefault(data, "lon", int, -1)
-		data["dist"]=castdefault(data, "dist", int, -1)
+		data["lat"]=castdefault(data, "lat", float, -1)
+		data["lon"]=castdefault(data, "lon", float, -1)
+		data["dist"]=castdefault(data, "dist", float, -1)
 		data["rating"]=castdefault(data, "rating", float, -1)
 		data["candy"]=castdefault(data, "candy", float, -1)
 		data["required"]=data["required"] if data["required"]!=[""] else []
@@ -259,6 +259,10 @@ def api_debugrequest():
 @app.route('/test')
 def api_test():
 	return json.dumps({"success":True})
+
+@app.route('/', methods=['POST', 'GET'])
+def root():
+	return redirect("/static/client/index.html")
 
 if __name__=="__main__":
 	app.run()
