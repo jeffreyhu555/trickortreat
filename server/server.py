@@ -98,7 +98,10 @@ def api_submit():
 			record=None
 
 		if not record:
-			record=House(data["placeid"], repr([data["note"]] if data.get("note","")!="" else []), data.get("rating"), data.get("candy"), repr(data.get("candies",[])))
+			c=[]
+			for i in data.get("candies",[]):
+				if i: c.append(i)
+			record=House(data["placeid"], repr([data["note"]] if data.get("note","")!="" else []), data.get("rating"), data.get("candy"), repr(c))
 			db.session.add(record)
 		else:
 			if "note" in data and data["note"]!="":
