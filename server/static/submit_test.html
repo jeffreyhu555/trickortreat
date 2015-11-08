@@ -7,6 +7,9 @@
     Rating:  <input id="rating"> <br/>
     Candy:   <input id="candy"> <br/>
     Note:    <input id="note"> <br/>
+    Lat:    <input id="lat"> <br/>
+    Lon:    <input id="lon"> <br/>
+    Address:    <input id="address"> <br/>
     Candies: <textarea id="candies"></textarea> <br/>
     <script type="text/javascript">
       function sendajax(){
@@ -15,7 +18,7 @@
           type: "POST",
           dataType:"json",
           data: JSON.stringify({ placeid:$("#placeid").val(), rating:$("#rating").val(), candies:$('#candies').val().split('\n'),
-                candy:$("#candy").val(), note:$("#note").val()}),
+                candy:$("#candy").val(), note:$("#note").val(), lat:$("#lat").val(), lon:$("#lon").val(), address:$("#address").val()}),
           contentType: "application/json; charset=utf-8",
           success:function(d){console.log(d);}
         });

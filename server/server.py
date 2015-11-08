@@ -1,11 +1,29 @@
 import sqlite3, time, json, os, sqlalchemy
 from flask import Flask, request
 from flask.ext.sqlalchemy import SQLAlchemy
+from math import sin, cos, sqrt, atan2, radians
+
+def calc_dist(lat1, lon1, lat2, lon2):
+	R = 3959.0
+
+	lat1 = radians(lat1)
+	lon1 = radians(lon1)
+	lat2 = radians(lat2)
+	lon2 = radians(lon2)
+
+	dlon = lon2 - lon1
+	dlat = lat2 - lat1
+
+	a = sin(dlat / 2)**2 + cos(lat1) * cos(lat2) * sin(dlon / 2)**2
+	c = 2 * atan2(sqrt(a), sqrt(1 - a))
+
+	return R * c
+
+candy_db=json.load(open("candies.json", 'r'))
 
 app = Flask(__name__)
 app.debug=1
-app.config['SQLALCHEMY_DATABASE_URI'] =\
- 'sqlite:///test.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
 
 db = SQLAlchemy(app)
 
@@ -24,11 +42,11 @@ class House(db.Model):
 	photos = db.Column(db.String(5000))
 	visits = db.Column(db.Integer())
 
-	def __init__(self, placeid, initial_note, initial_rating, initial_candy, initial_candies):
+	def __init__(self, placeid, address, lat, lon, initial_note, initial_rating, initial_candy, initial_candies):
 		self.placeid=placeid
-		self.address="<NOTCOMPUTED>"
-		self.lat=-1
-		self.lon=-1
+		self.address=address
+		self.lat=lat
+		self.lon=lon
 		self.notes=initial_note
 		self.rating=0 if initial_rating==None else initial_rating
 		self.rating_raters=1 if initial_rating!=None else 0
@@ -36,16 +54,7 @@ class House(db.Model):
 		self.avgcandy_raters=1 if initial_candy!=None else 0
 		self.candies=initial_candies
 		self.visits=1
-		self.photos=""
-
-class Candy(db.Model):
-	id = db.Column(db.Integer(), primary_key=True)
-	name = db.Column(db.String(30), unique=True)
-	tags = db.Column(db.String(5000)) # ### as seperator
-
-	def __init__(self, name, tags):
-		self.name=name
-		self.tags=tags
+		self.photos="[]"
 
 def FAIL(code, data=None): return json.dumps({"success":False, "error":code, "info":data})
 
@@ -55,24 +64,33 @@ def deduplicate(l):
 		if i not in c: c.append(i)
 	return c
 
+def castdefault(d, k, type, default):
+	if k not in d: return default
+	if d[k]=="": return default
+	return type(d[k])
+
 @app.route('/upload', methods=['POST', 'GET'])
 def api_upload():
 	if request.method!="POST": return FAIL("wrong_method")
 	if "?" not in request.url: return FAIL("no_placeid")
+	print(request.files)
 	if not request.files or 'image' not in request.files: return FAIL("no_attachment")
 
-	placeid=request.url.split("?",1)[1]
+	placeid=request.url.split("?",1)[1].split("&")[0]
 	f=request.files['image']
 	ext=f.filename.split(".",1)[1]
 
 	if ext not in ["png","jpg","jpeg","gif"]: return FAIL("invalid_extention")
 
-	record=House.query.filter_by(placeid=placeid).one()
+	try:
+		record=House.query.filter_by(placeid=placeid).one()
+	except qlalchemy.orm.exc.NoResultFound:
+		return FAIL("no_such_placeid")
 
-	if not record: return FAIL("no_such_placeid")
-
-	fname=placeid+str(len(record.images.split("###"))-1)+ext
-	record.images+=fname+"###"
+	rp=eval(record.photos)
+	fname=placeid+str(len(rp))+"."+ext
+	rp.append(fname)
+	record.photos=repr(rp)
 	db.session.commit()
 	f.save("static/uploads/"+fname)
 
@@ -86,7 +104,11 @@ def api_submit():
 		request.data=request.data.decode("utf-8")
 		try:
 			data=json.loads(str(request.data))
-		except json.decoder.JSONDecodeError as e:
+			data["lat"]=castdefault(data, "lat", int, -1)
+			data["lon"]=castdefault(data, "lon", int, -1)
+			data["rating"]=castdefault(data, "rating", int, -1)
+			data["candy"]=castdefault(data, "candy", int, -1)
+		except (json.decoder.JSONDecodeError, ValueError) as e:
 			return FAIL("invalid_data", str(e))
 
 		if "placeid" not in data: return FAIL("no_placeid")
@@ -101,17 +123,17 @@ def api_submit():
 			c=[]
 			for i in data.get("candies",[]):
 				if i: c.append(i)
-			record=House(data["placeid"], repr([data["note"]] if data.get("note","")!="" else []), data.get("rating"), data.get("candy"), repr(c))
+			record=House(data["placeid"], data["address"], data["lat"], data["lon"], repr([data["note"]] if data.get("note","")!="" else []), data["rating"], data["candy"], repr(c))
 			db.session.add(record)
 		else:
 			if "note" in data and data["note"]!="":
 				n=eval(record.notes)
 				n.append(data["note"])
 				record.notes=repr(n)
-			if "rating" in data:
+			if data["rating"]:
 				record.rating+=float(data["rating"]) #TODO: Real calculation
 				record.rating_raters+=1
-			if "candy" in data:
+			if data["candy"]:
 				record.avgcandy+=float(data["candy"]) #TODO: Real calculation
 				record.avgcandy_raters+=1
 			if "candies" in data and data["candies"]!=[""]:
@@ -119,6 +141,9 @@ def api_submit():
 				for e in data["candies"]:
 					if e: c.append(e)
 				record.candies=repr(deduplicate(c))
+			if record.lat==-1:
+				record.lat=data["lat"]
+				record.lon=data["lon"]
 			record.visits+=1
 
 		db.session.commit()
@@ -129,31 +154,96 @@ def api_submit():
 
 @app.route('/request', methods=['POST', 'GET'])
 def api_request():
-	# if not request.data: return FAIL("no_data")
-	# try:
-	# 	data=json.loads(request.data)
-	# except json.decoder.JSONDecodeError as e:
-	# 	return FAIL("invalid_data", str(e))
-
+	if request.method!="POST": return FAIL("wrong_method")
+	if not request.data: return FAIL("no_data")
+	request.data=request.data.decode("utf-8")
 	try:
-		name={"houses":[], "success":True}
+		data=json.loads(str(request.data))
+		data["lat"]=castdefault(data, "lat", int, -1)
+		data["lon"]=castdefault(data, "lon", int, -1)
+		data["dist"]=castdefault(data, "dist", int, -1)
+		data["rating"]=castdefault(data, "rating", float, -1)
+		data["candy"]=castdefault(data, "candy", float, -1)
+		data["required"]=data["required"] if data["required"]!=[""] else []
+		data["disallowed"]=data["disallowed"] if data["disallowed"]!=[""] else []
+	except (json.decoder.JSONDecodeError, ValueError) as e:
+		return FAIL("invalid_data", str(e))
 
-		for row in House.query.all():
-			name["houses"].append({
-				"placeid":row.placeid,
-				"address":row.address,
-				"lat":row.lat,
-				"lon":row.lon,
-				"rating":row.rating/row.rating_raters,
-				"avgcandy":row.avgcandy/row.avgcandy_raters,
-				"candies":eval(row.candies),
-				"visits":row.visits,
-				"notes":eval(row.notes)
-			})
+	name={"houses":[], "success":True}
 
-		return json.dumps(name)
-	except BaseException as e:
-		return FAIL("unknown_error", str(e))
+	for row in House.query.all():
+		if data["rating"]!=-1:
+			if (row.rating/row.rating_raters if row.rating_raters else -1)<=data["rating"]:
+				continue
+
+		if data["candy"]!=-1:
+			if (row.avgcandy/row.avgcandy_raters if row.avgcandy_raters else -1)<=data["candy"]:
+				continue
+
+		if data["dist"]!=-1:
+			if calc_dist(data["lat"], data["lon"], row.lat, row.lon)>data["dist"]:
+				continue
+
+		tags=[]
+		for candy in eval(row.candies):
+			tags.extend(candy_db.get(candy, [candy]))
+
+		good=True
+		for i in data["required"]:
+			if i not in tags:
+				good=False
+		if not good: continue
+
+		good=True
+		for i in data["disallowed"]:
+			if i in tags: 
+				good=False
+		if not good: continue
+
+		name["houses"].append({
+			"placeid":row.placeid,
+			"address":row.address,
+			"lat":row.lat,
+			"lon":row.lon,
+			"calc_rating":row.rating/row.rating_raters if row.rating_raters else -1,
+			"calc_avgcandy":row.avgcandy/row.avgcandy_raters if row.avgcandy_raters else -1,
+			"rating":row.rating,
+			"avgcandy":row.avgcandy,
+			"avgcandy_raters":row.avgcandy_raters,
+			"rating_raters":row.rating_raters,
+			"id":row.id,
+			"candies":eval(row.candies),
+			"visits":row.visits,
+			"notes":eval(row.notes),
+			"photos":eval(row.photos)
+		})
+
+	return json.dumps(name)
+
+@app.route('/debugrequest', methods=['POST', 'GET'])
+def api_debugrequest():
+	name={"houses":[], "success":True}
+
+	for row in House.query.all():
+		name["houses"].append({
+			"placeid":row.placeid,
+			"address":row.address,
+			"lat":row.lat,
+			"lon":row.lon,
+			"calc_rating":row.rating/row.rating_raters if row.rating_raters else -1,
+			"calc_avgcandy":row.avgcandy/row.avgcandy_raters if row.avgcandy_raters else -1,
+			"rating":row.rating,
+			"avgcandy":row.avgcandy,
+			"avgcandy_raters":row.avgcandy_raters,
+			"rating_raters":row.rating_raters,
+			"id":row.id,
+			"candies":eval(row.candies),
+			"visits":row.visits,
+			"notes":eval(row.notes),
+			"photos":eval(row.photos)
+		})
+
+	return json.dumps(name)
 
 @app.route('/test')
 def api_test():
