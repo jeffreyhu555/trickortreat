@@ -1,0 +1,83 @@
+<!doctype html>
+<html>
+	<head>
+		<link rel="stylesheet" type="text/css" href="main.css"/>
+		<link rel="stylesheet" type="text/css" href="raty/jquery.raty.css"/>
+		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+		<script type="text/javascript" src="raty/jquery.raty.js"></script>
+		<script type="text/javascript" src="main.js"></script>
+		<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB6PYTZyYBXAt5QB2rulYAkEUMcld7Mg_Q&callback=initMap" 
+		 async defer></script>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	</head>
+	<body onload="initBindings();">
+		
+		<div id="page1">
+			<div id="mapcontainer">
+				<div id="map"></div>
+			</div>
+			<div id="uploadcontainer">
+				<div id="skip-and-upload-container">
+					<input type="submit" value="Take Photo&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" class="pomegranate-flat-button skip-or-upload-button" id="upload-button">
+					<input type="submit" value="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;No Photo" class="carrot-flat-button skip-or-upload-button" id="skip-upload-button" onclick="scrollToPage3();">
+				</div>
+				<div id="filter-button-container">
+					<input type="submit" value="View Houses" class="turquoise-flat-button" id="browse-button" onclick="scrollToPage2();">
+				</div>
+			</div>
+		</div>
+		 
+		<div id="page2">
+			<div id="search-button-container">
+				<input type="submit" value="Search" class="nephritis-flat-button" id="search-button" onclick="search();">
+			</div>
+		</div>
+
+		<div id="page3">
+			<div id="send-button-container">
+				<input type="submit" value="Send" class="alizarin-flat-button" id="browse-button" onclick="submitData();">
+			</div>
+			<input type="text" placeholder="Note" class="flat fullwidth tall centered" id="note">
+			<div id="toggle-container">
+				<div class="checkbox-element" onclick="$('#hersheys').click();">
+					<input id="hersheys" type="checkbox">Hersheys</input>
+				</div>
+				<div class="checkbox-element" onclick="$('#fshersheys').click();">
+					<input id="fshersheys" type="checkbox">Full-size Hersheys</input>
+				</div>
+				<div class="checkbox-element" onclick="$('#twizzlers').click();">
+					<input id="twizzlers" type="checkbox">Twizzlers</input>
+				</div>
+				<div class="checkbox-element" onclick="$('#rpeices').click();">
+					<input id="rpeices" type="checkbox">Reeses Peisces</input>
+				</div>
+				<div class="checkbox-element" onclick="$('#snickers').click();">
+					<input id="snickers" type="checkbox">M&amp;Ms</input>
+				</div>
+				<div class="checkbox-element" onclick="$('#3musketeers').click();">
+					<input id="3musketeers" type="checkbox">3 Musketeers</input>
+				</div>
+				<div class="checkbox-element" onclick="$('#nerds').click();">
+					<input id="nerds" type="checkbox">Nerds</input>
+				</div>
+				<div class="checkbox-element" onclick="$('#gum').click();">
+					<input id="gum" type="checkbox">Gum</input>
+				</div>
+			</div>
+			<div class="star-container">
+				House Rating:
+				<div id="rating" class="raty-selector"></div>
+			</div>
+			<div class="star-container">
+				Candy Amount:
+				<div id="candy" class="raty-selector"></div>
+			</div>
+			<div id="computed-container">
+				<input type="text" placeholder="Lat" class="flat fullwidth tall centered" id="lat" disabled>
+				<input type="text" placeholder="Lon" class="flat fullwidth tall centered" id="lon" disabled>
+				<input type="text" placeholder="Computed Address" class="flat fullwidth tall centered" id="address" disabled>
+			</div>
+		</div>
+		<input type="file" accept="image/*" capture="camera" id="hidden-upload-field"/>
+	</body>
+</html>
