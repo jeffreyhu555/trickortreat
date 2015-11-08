@@ -104,8 +104,8 @@ def api_submit():
 		request.data=request.data.decode("utf-8")
 		try:
 			data=json.loads(str(request.data))
-			data["lat"]=castdefault(data, "lat", int, -1)
-			data["lon"]=castdefault(data, "lon", int, -1)
+			data["lat"]=castdefault(data, "lat", float, -1)
+			data["lon"]=castdefault(data, "lon", float, -1)
 			data["rating"]=castdefault(data, "rating", int, -1)
 			data["candy"]=castdefault(data, "candy", int, -1)
 		except (json.decoder.JSONDecodeError, ValueError) as e:
@@ -123,6 +123,8 @@ def api_submit():
 			c=[]
 			for i in data.get("candies",[]):
 				if i: c.append(i)
+			print(c)
+			print(data)
 			record=House(data["placeid"], data["address"], data["lat"], data["lon"], repr([data["note"]] if data.get("note","")!="" else []), data["rating"], data["candy"], repr(c))
 			db.session.add(record)
 		else:
@@ -186,7 +188,7 @@ def api_request():
 
 		tags=[]
 		for candy in eval(row.candies):
-			tags.extend(candy_db.get(candy, [candy]))
+			tags.extend(candy_db.get(candy.lower(), [candy.lower()]))
 
 		good=True
 		for i in data["required"]:
@@ -225,6 +227,9 @@ def api_debugrequest():
 	name={"houses":[], "success":True}
 
 	for row in House.query.all():
+		tags=[]
+		for candy in eval(row.candies):
+			tags.extend(candy_db.get(candy.lower(), [candy.lower()]))
 		name["houses"].append({
 			"placeid":row.placeid,
 			"address":row.address,
@@ -240,7 +245,8 @@ def api_debugrequest():
 			"candies":eval(row.candies),
 			"visits":row.visits,
 			"notes":eval(row.notes),
-			"photos":eval(row.photos)
+			"photos":eval(row.photos),
+			"tags":tags
 		})
 
 	return json.dumps(name)
